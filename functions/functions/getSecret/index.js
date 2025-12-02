@@ -1,9 +1,9 @@
 const {HttpsError, onCall} = require("firebase-functions/v2/https");
 const {defineSecret} = require("firebase-functions/params");
 
-// Bind the secret named GOOGLE_API_KEY that you set with:
-// firebase functions:secrets:set GOOGLE_API_KEY
-const googleApiKey = defineSecret("GOOGLE_API_KEY");
+// Bind a secret for template use. Rename TEMPLATE_SECRET to your own key name:
+// firebase functions:secrets:set TEMPLATE_SECRET
+const templateSecret = defineSecret("TEMPLATE_SECRET");
 
 const maskSecret = (value) => {
   if (!value || value.length < 8) {
@@ -12,23 +12,23 @@ const maskSecret = (value) => {
   return `${value.slice(0, 4)}...${value.slice(-4)}`;
 };
 
-exports.getSecret = onCall({secrets: [googleApiKey]}, (request) => {
+exports.getSecret = onCall({secrets: [templateSecret]}, (request) => {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Sign in to access this function.");
   }
 
-  const key = googleApiKey.value();
+  const key = templateSecret.value();
   if (!key) {
     throw new HttpsError(
         "failed-precondition",
-        "GOOGLE_API_KEY secret is not set.",
+        "TEMPLATE_SECRET is not set. Update the secret name for your project.",
     );
   }
 
   return {
     message: "Secret loaded via Firebase Secret Manager.",
-    googleApiKeyMasked: maskSecret(key),
+    maskedValue: maskSecret(key),
     note:
-      "Use this function server-side; do not forward raw secrets to clients.",
+      "Replace this function with your own server logic as needed.",
   };
 });

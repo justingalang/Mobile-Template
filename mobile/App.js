@@ -10,7 +10,7 @@ export default function App() {
   const [status, setStatus] = useState(
     isFirebaseConfigured
       ? 'Ready to talk to Firebase.'
-      : 'Add your Firebase keys in mobile/firebaseConfig.js.'
+      : 'Add your Firebase keys in mobile/.env (see README).'
   );
   const [lastPingId, setLastPingId] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -51,7 +51,7 @@ export default function App() {
     setIsFetchingSecret(true);
     try {
       const data = await fetchMaskedSecret();
-      setSecretInfo(data.googleApiKeyMasked || data.message || 'Secret fetched.');
+      setSecretInfo(data.maskedValue || data.message || 'Secret fetched.');
       setStatus('Fetched masked secret via Cloud Function.');
     } catch (error) {
       setSecretInfo(null);
@@ -66,8 +66,8 @@ export default function App() {
       <SafeAreaView style={styles.container}>
         <StatusBar style="dark" />
         <View style={styles.header}>
-          <Text style={styles.title}>Atlas mobile starter</Text>
-          <Text style={styles.subtitle}>Expo • React Native • Firebase</Text>
+          <Text style={styles.title}>Mobile template</Text>
+          <Text style={styles.subtitle}>Expo • React Native • Firebase template</Text>
         </View>
 
         <View style={styles.card}>
@@ -79,8 +79,8 @@ export default function App() {
         {lastPingId ? (
           <Text style={styles.cardFootnote}>Last ping document id: {lastPingId}</Text>
         ) : null}
-        <Pressable
-          style={({ pressed }) => [
+          <Pressable
+            style={({ pressed }) => [
               styles.button,
               (!isFirebaseConfigured || isSaving) && styles.buttonDisabled,
               pressed && styles.buttonPressed,
@@ -96,7 +96,8 @@ export default function App() {
           </Pressable>
           <Text style={styles.helperText}>
             The ping writes to a `pings` collection. Configure your Firebase keys, then tap the
-            button and look for the new document in the Firebase console.
+            button and look for the new document in the Firebase console. Replace this with your
+            own feature once setup is verified.
           </Text>
           <View style={styles.divider} />
           <Pressable
@@ -116,9 +117,8 @@ export default function App() {
           </Pressable>
           {secretInfo ? <Text style={styles.cardFootnote}>{secretInfo}</Text> : null}
           <Text style={styles.helperText}>
-            This calls the callable function `getSecret`, which reads the Google API key from
-            Firebase Secret Manager and returns a masked value. Anonymous auth must be enabled for
-            this sample.
+            This calls the callable function `getSecret`, which reads a secret from Firebase Secret
+            Manager and returns a masked value. Update the secret name and logic for your project.
           </Text>
         </View>
       </SafeAreaView>
